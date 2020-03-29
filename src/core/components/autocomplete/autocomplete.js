@@ -26,6 +26,7 @@ export default {
       limit: undefined,
       valueProperty: 'id',
       textProperty: 'text',
+      typeProperty: 'type',
 
       openIn: 'page', // or 'popup' or 'dropdown'
       pageBackLinkText: 'Back',

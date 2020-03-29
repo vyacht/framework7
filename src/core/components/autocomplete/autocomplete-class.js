@@ -82,19 +82,23 @@ class Autocomplete extends Framework7Class {
         for (let i = 0; i < limit; i += 1) {
           const itemValue = typeof items[i] === 'object' ? items[i][ac.params.valueProperty] : items[i];
           const itemText = typeof items[i] === 'object' ? items[i][ac.params.textProperty] : items[i];
+          const itemType = typeof items[i] === 'object' ? items[i][ac.params.typeProperty] : items[i];
           if (i === 0) {
             firstValue = itemValue;
             firstItem = ac.items[i];
           }
+          //console.log("onInputChange: ", items[i]);
           itemsHTML += ac.renderItem({
             value: itemValue,
             text: ac.params.highlightMatches ? itemText.replace(regExp, '<b>$1</b>') : itemText,
+            type: itemType,
           }, i);
         }
         if (itemsHTML === '' && query === '' && ac.params.dropdownPlaceholderText) {
           itemsHTML += ac.renderItem({
             placeholder: true,
             text: ac.params.dropdownPlaceholderText,
+            type: 'placeholder'
           });
         }
         ac.$dropdownEl.find('ul').html(itemsHTML);
@@ -238,6 +242,7 @@ class Autocomplete extends Framework7Class {
     function onDropdownClick() {
       const $clickedEl = $(this);
       let clickedItem;
+      //console.log("onDropdownClick() with " + ac.items.length + " elements", $clickedEl);
       for (let i = 0; i < ac.items.length; i += 1) {
         const itemValue = typeof ac.items[i] === 'object' ? ac.items[i][ac.params.valueProperty] : ac.items[i];
         const value = $clickedEl.attr('data-value');
@@ -369,7 +374,7 @@ class Autocomplete extends Framework7Class {
     });
     $dropdownEl.children('.autocomplete-dropdown-inner').css({
       maxHeight: `${maxHeight}px`,
-      [paddingProp]: $listEl.length > 0 && !ac.params.expandInput ? `${paddingValue}px` : '',
+      //[paddingProp]: $listEl.length > 0 && !ac.params.expandInput ? `${paddingValue}px` : '',
     });
   }
 
@@ -395,10 +400,15 @@ class Autocomplete extends Framework7Class {
           const aValue = typeof ac.value[j] === 'object' ? ac.value[j][ac.params.valueProperty] : ac.value[j];
           if (aValue === itemValue || aValue * 1 === itemValue * 1) selected = true;
         }
+
+        //console.log("AC source: ", query);
+
         itemsHTML += ac.renderItem({
           value: itemValue,
           text: typeof items[i] === 'object' ? items[i][ac.params.textProperty] : items[i],
           inputType: ac.inputType,
+          type: typeof ac.value[i] === 'object' ? items[i][ac.params.typeProperty] : items[i],
+          params: ac.params,
           id: ac.id,
           inputName: ac.inputName,
           selected,
@@ -424,9 +434,11 @@ class Autocomplete extends Framework7Class {
     const ac = this;
     let valuesHTML = '';
     for (let i = 0; i < ac.value.length; i += 1) {
+      //console.log("AC updateValues: ", items[i]);
       valuesHTML += ac.renderItem({
         value: typeof ac.value[i] === 'object' ? ac.value[i][ac.params.valueProperty] : ac.value[i],
         text: typeof ac.value[i] === 'object' ? ac.value[i][ac.params.textProperty] : ac.value[i],
+        type: typeof ac.value[i] === 'object' ? ac.value[i][ac.params.typeProperty] : ac.value[i],
         inputType: ac.inputType,
         id: ac.id,
         inputName: `${ac.inputName}-checked}`,
